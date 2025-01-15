@@ -36,7 +36,6 @@ main = do
   _ <- mainLoop win w h buf
   wclear win
   endWin
-  update
 
 moveLeft :: Buffer -> Buffer
 moveLeft = updatePos (\(Pos y x) -> Pos y $ max (x - 1) 0)
@@ -60,7 +59,7 @@ mainLoop win w h buf = do
   refresh
   c <- getCh
   case c of
-    KeyChar 'q' -> error "aus"
+    KeyChar 'q' -> pure buf
     KeyUp -> go (moveUp buf)
     KeyDown -> go (moveDown h buf)
     KeyLeft -> go (moveLeft buf)
