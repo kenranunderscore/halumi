@@ -4,7 +4,11 @@ module Halumi.Main where
 
 import UI.HSCurses.Curses
 
-type Pos = Int
+data Pos = Pos
+  { row :: Int
+  , col :: Int
+  }
+  deriving stock (Show, Eq)
 
 data Buffer = Buffer
   { content :: String
@@ -20,41 +24,47 @@ updatePos f buf = buf{pos = f buf.pos}
 fromFile :: FilePath -> IO Buffer
 fromFile path = do
   contents <- readFile path
-  pure $ Buffer contents 0
+  pure $ Buffer contents (Pos 0 0)
 
 main :: IO ()
 main = do
   buf <- fromFile "LICENSE"
   win <- initScr
+  (h, w) <- scrSize
   keypad win True
   echo False
-  _ <- mainLoop win buf
+  _ <- mainLoop win w h buf
   wclear win
   endWin
+  update
 
 moveLeft :: Buffer -> Buffer
-moveLeft = updatePos (\p -> max (p - 1) 0)
+moveLeft = updatePos (\(Pos y x) -> Pos y $ max (x - 1) 0)
 
-moveRight :: Buffer -> Buffer
-moveRight buf = updatePos (\p -> min (p + 1) (length buf.content - 1)) buf
+moveRight :: Int -> Buffer -> Buffer
+moveRight width buf =
+  updatePos (\(Pos y x) -> Pos y $ min (x + 1) (width - 1)) buf
 
-mainLoop :: Window -> Buffer -> IO Buffer
-mainLoop win buf = do
+moveUp :: Buffer -> Buffer
+moveUp = updatePos (\(Pos y x) -> Pos (max (y - 1) 0) x)
+
+moveDown :: Int -> Buffer -> Buffer
+moveDown height buf =
+  updatePos (\(Pos y x) -> Pos (min (y + 1) (height - 1)) x) buf
+
+mainLoop :: Window -> Int -> Int -> Buffer -> IO Buffer
+mainLoop win w h buf = do
   wclear win
   wAddStr win buf.content
-  move 0 buf.pos
+  move buf.pos.row buf.pos.col
   refresh
   c <- getCh
   case c of
     KeyChar 'q' -> error "aus"
-    KeyUp -> mainLoop win buf
-    KeyDown -> mainLoop win buf
-    KeyLeft -> do
-      move 0 buf.pos
-      refresh
-      mainLoop win (moveLeft buf)
-    KeyRight -> do
-      move 0 buf.pos
-      refresh
-      mainLoop win (moveRight buf)
-    _ -> mainLoop win buf
+    KeyUp -> go (moveUp buf)
+    KeyDown -> go (moveDown h buf)
+    KeyLeft -> go (moveLeft buf)
+    KeyRight -> go (moveRight w buf)
+    _ -> go buf
+ where
+  go = mainLoop win w h
