@@ -4,6 +4,10 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    hscurses = {
+      url = "github:skogsbaer/hscurses";
+      flake = false;
+    };
   };
 
   outputs =
@@ -11,6 +15,7 @@
       self,
       nixpkgs,
       flake-parts,
+      ...
     }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
@@ -32,6 +37,9 @@
                 hspkgs = prev.haskell.packages.${ghc}.override (old: {
                   overrides = final.lib.composeExtensions (old.overrides or (_: _: { })) (
                     hfinal: hprev: {
+                      hscurses = hfinal.callCabal2nix "hscurses" inputs.hscurses {
+                        inherit (final) ncurses;
+                      };
                       halumi = hfinal.callCabal2nix "halumi" (final.lib.cleanSource ./.) { };
                       h-raylib = pkgs.haskell.lib.compose.doJailbreak hprev.h-raylib;
                     }

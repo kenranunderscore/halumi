@@ -18,6 +18,22 @@
         "type": "github"
       }
     },
+    "hscurses": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1737280058,
+        "narHash": "sha256-9T12fOjD63A4nSs8j/xQGRBhoU/p4sIMZfUtaZe16YU=",
+        "owner": "skogsbaer",
+        "repo": "hscurses",
+        "rev": "68a82377cf696add53dc106b903bf6d439c90c87",
+        "type": "github"
+      },
+      "original": {
+        "owner": "skogsbaer",
+        "repo": "hscurses",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1736523798,
@@ -49,6 +65,7 @@
     "root": {
       "inputs": {
         "flake-parts": "flake-parts",
+        "hscurses": "hscurses",
         "nixpkgs": "nixpkgs"
       }
     }
