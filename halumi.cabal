@@ -7,11 +7,14 @@ author:        Johannes Maier
 maintainer:    johannes.maier@mailbox.org
 build-type:    Simple
 
-common warnings
-  ghc-options: -Wall
+common common-options
+  ghc-options:        -Wall
+  default-extensions:
+    NoFieldSelectors
+    OverloadedRecordDot
 
 library
-  import:           warnings
+  import:           common-options
   exposed-modules:
     Halumi.Buffer
     Halumi.Main
@@ -25,7 +28,7 @@ library
   default-language: GHC2024
 
 executable halumi
-  import:           warnings
+  import:           common-options
   main-is:          Main.hs
   build-depends:
     , base
@@ -35,7 +38,7 @@ executable halumi
   default-language: GHC2024
 
 test-suite halumi-test
-  import:           warnings
+  import:           common-options
   default-language: GHC2024
   type:             exitcode-stdio-1.0
   hs-source-dirs:   test

@@ -1,6 +1,3 @@
-{-# LANGUAGE OverloadedRecordDot #-}
-{-# LANGUAGE NoFieldSelectors #-}
-
 module Halumi.Buffer (
   Buffer (content, lines, pos),
   Pos (..),
