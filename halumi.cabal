@@ -12,7 +12,10 @@ common warnings
 
 library
   import:           warnings
-  exposed-modules:  Halumi.Main
+  exposed-modules:
+    Halumi.Buffer
+    Halumi.Main
+
   build-depends:
     , base
     , hscurses
